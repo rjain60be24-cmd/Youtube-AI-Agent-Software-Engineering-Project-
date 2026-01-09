@@ -2,30 +2,12 @@
 
 Distraction reduction for YouTube using AI classification guided by your custom keyword intent lists (showKeywords + hideKeywords). Every visible video title is sent to an AI provider and classified as EDUCATIONAL (show) or DISTRACTING (hide). No instant local keyword filtering – keywords only steer AI behavior.This project was developed as part of a **Software Engineering course**, focusing on applying software development life cycle (SDLC) principles, system design, database modeling, and implementation best practices.
 
-## Table of Contents
-1. Overview
-2. Key Features
-3. How It Works
-4. Supported AI Providers
-5. Installation (Extension)
-6. Configuration (Popup)
-7. Keyword Strategy
-8. Privacy & Data Handling
-9. Troubleshooting
-10. FAQ
-11. Roadmap
-12. License
-
----
-
 ## 1. Overview
 The extension monitors the YouTube feed (including infinite scroll) and batches new video titles for AI classification. Your keyword lists guide the AI prompt:
 - showKeywords: Positive / educational intent signals.
 - hideKeywords: Distracting / entertainment intent signals.
 
 The AI returns one label per title. The extension hides elements classified as DISTRACTING.
-
----
 
 ## 2. Key Features
 - AI-Guided Filtering (no local hard hide/show).
@@ -34,8 +16,6 @@ The AI returns one label per title. The extension hides elements classified as D
 - Non-blocking MutationObserver + periodic scan.
 - Lightweight popup to toggle extension, edit keywords, pick provider, set API key.
 - Resilient message passing (runtime guard, error labels on elements).
-
----
 
 ## 3. How It Works
 Flow:
@@ -48,8 +28,6 @@ Flow:
 
 No pre-filter by keywords; all decisions come from AI.
 
----
-
 ## 4. Supported AI Providers
 | Provider | Model (default) | Notes |
 |----------|-----------------|-------|
@@ -59,8 +37,6 @@ No pre-filter by keywords; all decisions come from AI.
 | Mistral AI | mistral-small-latest | Balanced speed/cost. |
 | Cloudflare Workers AI | @cf/meta/llama-3-8b-instruct | API key format: accountId:token. |
 | Hugging Face | facebook/bart-large-mnli | Zero-shot classification per title (slower for large batches). |
-
----
 
 ## 5. Installation (Extension)
 1. Clone repository:
@@ -72,8 +48,6 @@ No pre-filter by keywords; all decisions come from AI.
 5. Select project root.
 6. Extension appears in toolbar.
 
----
-
 ## 6. Configuration (Popup)
 Fields:
 - Extension Status (ON/OFF)
@@ -84,8 +58,6 @@ Fields:
 
 Changes persist via chrome.storage.sync.
 
----
-
 ## 7. Keyword Strategy
 - showKeywords: Terms strongly correlated with learning (e.g. tutorial, python, guide, course, programming).
 - hideKeywords: Terms correlated with entertainment or distraction (e.g. vlog, prank, reaction, drama, exposed, compilation).
@@ -93,15 +65,11 @@ Changes persist via chrome.storage.sync.
 
 Effect: Keywords alter the AI prompt context, nudging classification. They do not directly hide content.
 
----
-
 ## 8. Privacy & Data Handling
 - Only video titles (strings) plus keyword lists sent to provider endpoints.
 - No user identifiers, no watch history, no cookies intentionally transmitted.
 - Hugging Face path sends each title separately.
 - For maximum privacy, prefer providers you trust or a self-hosted model (future roadmap).
-
----
 
 ## 9. Troubleshooting
 | Symptom | Cause | Fix |
@@ -111,8 +79,6 @@ Effect: Keywords alter the AI prompt context, nudging classification. They do no
 | Gemini 404 | Wrong model alias or endpoint version | Use gemini-2.0-flash v1beta endpoint. |
 | Decisions always show | Prompt too weak / keywords empty | Populate hideKeywords with stronger patterns. |
 | Hugging Face slow | Per-title inference | Use Groq or Gemini for batching. |
-
----
 
 ## 10. FAQ
 Q: Why not hide immediately by keyword?
@@ -127,21 +93,15 @@ A: No, only title text currently.
 Q: Can I add caching?
 A: Yes. Add a Map<title, decision> in background.js to skip reclassification.
 
----
-
 ## 11. Roadmap
 - Optional hybrid pre-filter toggle.
 - Thumbnail OCR for richer signals.
 - Local open-source model running via WebGPU (no external API).
 - Confidence scoring display overlay.
 - Keyword weighting (strong vs mild).
-
----
-
+  
 ## 12. License
 Open-source. Use, modify, extend freely.
-
----
 
 ## Developer Notes
 - All classification requests go through background.js to avoid CORS issues.
