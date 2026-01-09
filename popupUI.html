@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Edu-Filter</title>
+        <style>
+                :root {
+                        /* Light mode */
+                        --bg-primary: #ffffff;
+                        --bg-secondary: #f8f9fa;
+                        --bg-tertiary: #f5f5f5;
+                        --text-primary: #1f2937;
+                        --text-secondary: #6b7280;
+                        --border-color: #e5e7eb;
+                        --border-secondary: #e9ecef;
+                        --disabled-bg: #ffebee;
+                        --disabled-border: #ffcdd2;
+                        --input-bg: #ffffff;
+                        --shadow-color: rgba(0,0,0,0.15);
+                        --accent: #2ed573;
+                        --danger: #ff4757;
+                        --warning: #ffa502;
+                }
+
+                [data-theme="dark"] {
+                        /* Dark mode */
+                        --bg-primary: #111827;
+                        --bg-secondary: #1f2937;
+                        --bg-tertiary: #374151;
+                        --text-primary: #f9fafb;
+                        --text-secondary: #d1d5db;
+                        --border-color: #374151;
+                        --border-secondary: #2b3441;
+                        --disabled-bg: #2a1f1f;
+                        --disabled-border: #3d2626;
+                        --input-bg: #1f2937;
+                        --shadow-color: rgba(0,0,0,0.5);
+                        --accent: #22c55e;
+                        --danger: #ef4444;
+                        --warning: #f59e0b;
+                }
+
+                body {
+                        width: 360px;
+                        padding: 14px 16px 16px;
+                        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+                        background: var(--bg-primary);
+                        color: var(--text-primary);
+                        transition: background-color .25s ease, color .25s ease;
+                }
+
+                .header {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        margin-bottom: 14px;
+                }
+                .title {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        font-weight: 700;
+                        letter-spacing: 0.2px;
+                }
+                .title-badge {
+                        font-size: 12px;
+                        padding: 2px 6px;
+                        border-radius: 999px;
+                        background: var(--bg-tertiary);
+                        color: var(--text-secondary);
+                }
+
+                .theme-toggle {
+                        background: transparent;
+                        border: 1px solid var(--border-color);
+                        color: var(--text-primary);
+                        font-size: 16px;
+                        padding: 4px 8px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        transition: background .2s ease, border-color .2s ease;
+                }
+                .theme-toggle:hover { background: var(--bg-tertiary); }
+
+                .card {
+                        border: 1px solid var(--border-color);
+                        background: var(--bg-secondary);
+                        border-radius: 10px;
+                        padding: 12px;
+                        box-shadow: 0 4px 10px var(--shadow-color);
+                        margin-bottom: 12px;
+                }
+
+                .toggle-row {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 12px;
+                        margin-bottom: 8px;
+                }
+                .toggle-label { font-weight: 600; }
+                .status-text { font-weight: 600; margin-left: 8px; }
+                .status-text.enabled { color: var(--accent); }
+                .status-text.disabled { color: var(--danger); }
+                .muted { color: var(--text-secondary); font-size: 12px; margin-top: 4px; }
+
+                .switch {
+                        position: relative;
+                        width: 56px;
+                        height: 30px;
+                        background: #c7c9cf;
+                        border-radius: 999px;
+                        cursor: pointer;
+                        transition: background .2s ease;
+                        border: 1px solid var(--border-color);
+                }
+                .switch.active { background: var(--accent); }
+                .switch::after {
+                        content: '';
+                        position: absolute;
+                        top: 2px; left: 2px;
+                        width: 26px; height: 26px;
+                        border-radius: 50%;
+                        background: #fff;
+                        box-shadow: 0 2px 6px var(--shadow-color);
+                        transition: left .2s ease;
+                }
+                .switch.active::after { left: 28px; }
+
+                h4 { margin: 8px 0 10px; font-size: 14px; }
+                .keyword-list {
+                        max-height: 140px; overflow-y: auto; padding: 8px; border-radius: 8px;
+                        border: 1px solid var(--border-color); background: var(--bg-primary);
+                }
+                .keyword-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 8px; border-radius: 6px; background: var(--bg-tertiary); margin: 6px 0; }
+                .keyword-item span { overflow: hidden; text-overflow: ellipsis; }
+                .delete-btn { background: var(--danger); color: #fff; border: none; padding: 2px 8px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+                .delete-btn:hover { filter: brightness(0.95); }
+                .add-keyword { display: flex; gap: 8px; margin-top: 8px; }
+                .add-keyword input { flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--input-bg); color: var(--text-primary); }
+                .add-btn { background: var(--accent); color: #fff; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+                .add-btn:hover { filter: brightness(0.95); }
+
+                .disabled { opacity: .5; pointer-events: none; }
+
+                /* API Key Section Styles */
+                .api-section {
+                        margin-top: 10px;
+                }
+                .api-key-input {
+                        width: 315px;
+                        padding: 8px;
+                        border: 1px solid var(--border-color);
+                        border-radius: 8px;
+                        background: var(--input-bg);
+                        color: var(--text-primary);
+                        font-size: 12px;
+                        margin-top: 8px;
+                        font-family: monospace;
+                }
+                .provider-select {
+                        width: 100%;
+                        padding: 8px;
+                        border: 1px solid var(--border-color);
+                        border-radius: 8px;
+                        background: var(--input-bg);
+                        color: var(--text-primary);
+                        margin-top: 8px;
+                        cursor: pointer;
+                }
+                .save-key-btn {
+                        width: 100%;
+                        background: var(--accent);
+                        color: #fff;
+                        border: none;
+                        padding: 8px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        margin-top: 8px;
+                }
+                .save-key-btn:hover { filter: brightness(0.95); }
+                .api-status {
+                        font-size: 12px;
+                        margin-top: 8px;
+                        padding: 6px;
+                        border-radius: 6px;
+                        text-align: center;
+                }
+                .api-status.success {
+                        background: rgba(46, 213, 115, 0.1);
+                        color: var(--accent);
+                        border: 1px solid var(--accent);
+                }
+                .api-status.warning {
+                        background: rgba(255, 165, 2, 0.1);
+                        color: var(--warning);
+                        border: 1px solid var(--warning);
+                }
+                .help-link {
+                        color: var(--accent);
+                        text-decoration: none;
+                        font-size: 11px;
+                }
+                .help-link:hover { text-decoration: underline; }
+
+                /* Theme toggle icon visibility */
+                .theme-toggle .icon { display: inline-flex; align-items: center; }
+                .theme-toggle .icon.sun { display: none; }
+                [data-theme="dark"] .theme-toggle .icon.sun { display: inline-flex; }
+                [data-theme="dark"] .theme-toggle .icon.moon { display: none; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="title">
+                <span>Edu-Filter</span>
+                <span class="title-badge">v2.0</span>
+            </div>
+            <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
+                <span class="icon moon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </span>
+                <span class="icon sun" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <div class="card" id="masterToggleContainer">
+            <div class="toggle-row">
+                <span class="toggle-label">Extension Status</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div class="switch" id="masterToggle"></div>
+                    <span class="status-text" id="masterStatus">ON</span>
+                </div>
+            </div>
+            <div class="muted" id="statusDescription">Extension is actively filtering videos</div>
+        </div>
+
+        <!-- NEW: API Key Configuration Card -->
+        <div class="card">
+            <h4>🔑 AI Provider Configuration</h4>
+            <div class="api-section">
+                <label style="font-size: 12px; color: var(--text-secondary);">Select Provider:</label>
+                <select class="provider-select" id="llmProvider">
+                    <option value="groq">Groq</option>
+                    <option value="OpenRouter">OpenRouter</option>
+                    <option value="gemini">Google Ai Studio</option>
+                    <option value="Hugging Face">Hugging face model</option>
+                    <option value="Mistral AI">Mistral AI</option>
+                    <option value="Cloudflare Workers AI">Cloudflare Workers AI</option>
+                </select>
+
+                <label style="font-size: 12px; color: var(--text-secondary); margin-top: 10px; display: block;">API Key:</label>
+                <input 
+                    type="password" 
+                    class="api-key-input" 
+                    id="apiKeyInput" 
+                    placeholder="Enter your API key here..."
+                />
+                
+                <button class="save-key-btn" id="saveKeyBtn">Save API Key</button>
+                
+                <div class="api-status" id="apiStatus" style="display: none;"></div>
+                
+                <!-- <div style="margin-top: 8px; text-align: center;">
+                    <a href="https://console.groq.com/keys" target="_blank" class="help-link" id="providerHelp">
+                        Get Groq API Key →
+                    </a>
+                </div> -->
+            </div>
+        </div>
+
+        <div class="card" id="extensionControls">
+            <div class="section">
+                <h4>Hide Keywords (Distracting)</h4>
+                <div class="keyword-list" id="hideKeywords"></div>
+                <div class="add-keyword">
+                    <input type="text" id="hideInput" placeholder="Add keyword to hide..." />
+                    <button class="add-btn" id="addHideBtn">Add</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h4>Show Keywords (Educational)</h4>
+                <div class="keyword-list" id="showKeywords"></div>
+                <div class="add-keyword">
+                    <input type="text" id="showInput" placeholder="Add keyword to always show..." />
+                    <button class="add-btn" id="addShowBtn">Add</button>
+                </div>
+            </div>
+        </div>
+
+        <script src="popupLogic.js"></script>
+    </body>
+</html>

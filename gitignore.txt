@@ -1,0 +1,17 @@
+# Virtual environments (keep these in case you need Python for other projects)
+/youtube_ai
+
+# Extension build files
+*.zip
+*.crx
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
