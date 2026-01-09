@@ -40,7 +40,7 @@ No pre-filter by keywords; all decisions come from AI.
 
 ## 5. Installation (Extension)
 1. Clone repository:
-   git clone https://github.com/sudhanshuraj13/youtube_ai_filter-.git
+   git clone https://github.com/rjain60be24-cmd/Youtube-AI-Agent-Software-Engineering-Project-/blob/main/gitignore.txt
    cd youtube_ai_filter-
 2. Open Chrome → chrome://extensions
 3. Enable Developer Mode.
